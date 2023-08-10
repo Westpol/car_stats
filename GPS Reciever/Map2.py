@@ -29,8 +29,8 @@ while 1:
                         msg[i] = float(msg[i])
                     print(msg[2])
 
-                    latRest = float(msg[0]) * 1000 * 50
-                    lonRest = float(msg[1]) * 1000 * 50
+                    latRest = float(msg[0]) * 1000 * 500
+                    lonRest = float(msg[1]) * 1000 * 500
                     if not Centered:
                         latCenter = latRest
                         lonCenter = lonRest

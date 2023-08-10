@@ -28,10 +28,46 @@ void loop()
       gps.encode(ss.read());
     }
   }
-  Serial.print(gps.location.lat(), 10);
+  printDate();
   Serial.print(",");
-  Serial.print(gps.location.lng(), 10);
+  printTime();
   Serial.print(",");
   Serial.print(gps.satellites.value());
+  Serial.print(",");
+  printPosition();
+  Serial.print(",");
+  Serial.print(gps.speed.kmph());
+  Serial.print(",");
+  Serial.print(gps.course.deg());
+  Serial.print(",");
+  Serial.print(gps.altitude.meters());
+  Serial.print(",");
+  Serial.print(gps.hdop.hdop());
   Serial.print(";\n");
+}
+
+
+void printDate(){
+  Serial.print(gps.date.day());
+  Serial.print("$");
+  Serial.print(gps.date.month());
+  Serial.print("$");
+  Serial.print(gps.date.year());
+}
+
+
+void printTime(){
+  Serial.print(gps.time.hour());
+  Serial.print("$");
+  Serial.print(gps.time.minute());
+  Serial.print("$");
+  Serial.print(gps.time.second());
+}
+
+
+void printPosition(){
+  Serial.print(gps.location.lat(), 10);
+  Serial.print("$");
+  Serial.print(gps.location.lng(), 10);
+
 }

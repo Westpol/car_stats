@@ -12,6 +12,8 @@ def data_handling(message, file_obj):
                     data += i
                     data += ","
                 data = data[:-1]
+                if (counter % 10) == 0:
+                    print(data)
                 file_obj.write(data + "\n")
 
 
@@ -25,8 +27,10 @@ while 1:
 
 file = open("Drive0001.txt", "w")
 
+counter = 0
 while 1:
     try:
+        counter += 1
         msg = arduino.readline().decode("utf-8")
         data_handling(msg, file)
     except:

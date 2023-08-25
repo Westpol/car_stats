@@ -12,7 +12,7 @@ lastlonRest = 0
 
 firstCount = 0
 
-file = open("Drive0003.txt", "r")
+file = open("Raw Data/Drive0003.txt", "r")
 
 for i in file.readlines():
     msg = i.split(",")[3].split("$")

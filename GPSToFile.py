@@ -25,7 +25,7 @@ while 1:
     except:
         print("GPS not connected")
 
-file = open("Drive0003.txt", "w")
+file = open("Raw Data/Drive0003.txt", "w")
 
 counter = 0
 while 1:

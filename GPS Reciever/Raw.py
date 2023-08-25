@@ -13,5 +13,4 @@ while 1:
     if not (msg == ""):
         msg = msg.strip(";\n")
         msg = msg.split(",")
-        if len(msg) == 3:
-            print(msg[2])
+        print(msg)

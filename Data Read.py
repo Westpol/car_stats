@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-file = open("Drive0001.txt", "r")
+file = open("Drive0003.txt", "r")
 
 raw_data = file.readlines()
 

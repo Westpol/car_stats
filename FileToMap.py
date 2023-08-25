@@ -12,13 +12,13 @@ lastlonRest = 0
 
 firstCount = 0
 
-file = open("Drive0002.txt", "r")
+file = open("Drive0003.txt", "r")
 
 for i in file.readlines():
     msg = i.split(",")[3].split("$")
     spd = i.split(",")[4]
-    latRest = float(msg[0]) * 1000 * 7
-    lonRest = float(msg[1]) * 1000 * 7
+    latRest = float(msg[0]) * 1000 * 5
+    lonRest = float(msg[1]) * 1000 * 5
     if not Centered:
         latCenter = latRest
         lonCenter = lonRest

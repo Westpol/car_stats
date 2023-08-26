@@ -20,7 +20,7 @@ def haversine_distance(coord1, coord2):
     a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
 
     # Ensure the argument of the square root is non-negative and within valid range
-    a = min(1, max(0, a))
+    # a = min(1, max(0, a))
 
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
@@ -29,7 +29,7 @@ def haversine_distance(coord1, coord2):
     return _distance
 
 
-file = open("Raw Data/Drive0003.txt", "r")
+file = open("Raw Data/Drive0002.txt", "r")
 
 overallDistance = 0
 firstRun = True
@@ -44,4 +44,4 @@ for i in file.readlines():
         firstRun = False
     lastCoord = (float(msg[0]), float(msg[1]))
 
-print("Distance:", overallDistance, "meters")
+print("Distance:", round(overallDistance / 1000, 4), "km")

@@ -12,7 +12,7 @@ lastlonRest = 0
 
 firstCount = 0
 
-file = open("Raw Data/Drive0003.txt", "r")
+file = open("Raw Data/Drive0002.txt", "r")
 
 for i in file.readlines():
     msg = i.split(",")[3].split("$")
@@ -24,7 +24,7 @@ for i in file.readlines():
         lonCenter = lonRest
         Centered = True
     else:
-        pygame.draw.line(screen, (float(spd)*2, float(spd)*2, float(spd)*2), (lastlatRest - latCenter + 500, lastlonRest - lonCenter + 500), (latRest - latCenter + 500, lonRest - lonCenter + 500))
+        pygame.draw.line(screen, (255, 255, 255), (lastlatRest - latCenter + 500, lastlonRest - lonCenter + 500), (latRest - latCenter + 500, lonRest - lonCenter + 500))
 
     lastlatRest = latRest
     lastlonRest = lonRest

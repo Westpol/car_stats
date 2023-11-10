@@ -2,25 +2,21 @@
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <SD.h>
-/*
-   This sample code demonstrates the normal use of a TinyGPSPlus (TinyGPSPlus) object.
-   It requires the use of SoftwareSerial, and assumes that you have a
-   4800-baud serial GPS device hooked up on pins 4(rx) and 3(tx).
-*/
-static const int RXPin = 2, TXPin = 3;
 
-#define chipSelect 4
+static const int RXPin = 2, TXPin = 3;    //GPS pins
+
+#define chipSelect 4    //CS for SD Card
 
 static const uint32_t GPSBaud = 9600;
 
-// The TinyGPSPlus object
 TinyGPSPlus gps;
 
-// The serial connection to the GPS device
-SoftwareSerial ss(RXPin, TXPin);
+SoftwareSerial ss(RXPin, TXPin);      //SoftwareSerial GPS
 
-void setup()
-{
+long driveNum;
+
+void setup(){
+
   Serial.begin(115200);
   ss.begin(GPSBaud);
 
@@ -30,6 +26,13 @@ void setup()
     while (1);
   }
   Serial.println("card initialized.");
+
+  File root;
+
+  root = SD.open("/");
+
+  driveNum = highestNumber(root);
+  Serial.println(driveNum);
 
 }
 
@@ -105,4 +108,31 @@ void printPosition(String* dataAddress){
   *dataAddress += "$";
   *dataAddress += String(gps.location.lng(), 10);
 
+}
+
+long highestNumber(File dir){
+  long highestNum = 0;
+  while (true) {
+
+    File entry =  dir.openNextFile();
+    if (! entry) {
+      // no more files
+      break;
+    }
+
+    String filename = String(entry.name());
+
+    String extractedNum = String(filename[0]);
+    extractedNum += String(filename[1]);
+    extractedNum += String(filename[2]);
+    extractedNum += String(filename[3]);
+    extractedNum += String(filename[4]);
+
+    int number = extractedNum.toInt();
+    if(number > highestNum){
+      highestNum = number;
+    }
+
+  }
+  return highestNum + 1;
 }

@@ -39,12 +39,12 @@ void loop(){
   unsigned long milli = millis() + 100;     //smart Delay (delay whie pulling possible GPS Data)
   unsigned long continous_read_time = 0;
   while(millis() < milli){
-    while(millis() < continous_read_time){
+    //while(millis() < continous_read_time){
       while(ss.available()){
         gps.encode(ss.read());
-        continous_read_time = millis() + 10;
+        //continous_read_time = millis() + 10;
       }
-    }
+    //}
   }
 
   if(gps.satellites.value() > 5){

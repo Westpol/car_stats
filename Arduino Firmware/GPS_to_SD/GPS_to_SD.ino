@@ -7,9 +7,9 @@
    It requires the use of SoftwareSerial, and assumes that you have a
    4800-baud serial GPS device hooked up on pins 4(rx) and 3(tx).
 */
-static const int RXPin = 3, TXPin = 4;
+static const int RXPin = 2, TXPin = 3;
 
-#define chipSelect 5
+#define chipSelect 4
 
 static const uint32_t GPSBaud = 9600;
 
@@ -33,15 +33,18 @@ void setup()
 
 }
 
-void loop()
-{
+void loop(){
 
-    String dataString = "";
+    String dataString = "";       //defining new, empty String to load GPS data onto
 
-  unsigned long milli = millis() + 100;
+  unsigned long milli = millis() + 100;     //smart Delay (delay whie pulling possible GPS Data)
+  unsigned long continous_read_time = 0;
   while(millis() < milli){
-    while(ss.available()){
-      gps.encode(ss.read());
+    while(millis() < continous_read_time){
+      while(ss.available()){
+        gps.encode(ss.read());
+        continous_read_time = millis() + 50;
+      }
     }
   }
 

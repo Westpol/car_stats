@@ -3,21 +3,20 @@
 #include <SPI.h>
 #include <SD.h>
 
+//GPS
 static const int RXPin = 2, TXPin = 3;    //GPS pins
-
-#define chipSelect 4    //CS for SD Card
-
+TinyGPSPlus gps;
+SoftwareSerial ss(RXPin, TXPin);      //SoftwareSerial GPS
 static const uint32_t GPSBaud = 9600;
 
-TinyGPSPlus gps;
-
-SoftwareSerial ss(RXPin, TXPin);      //SoftwareSerial GPS
-
+//SD Card
+#define chipSelect 4    //CS for SD Card
 long driveNum;
 
 void setup(){
 
   Serial.begin(115200);
+
   ss.begin(GPSBaud);
 
     if (!SD.begin(chipSelect)) {
@@ -26,11 +25,8 @@ void setup(){
     while (1);
   }
   Serial.println("card initialized.");
-
   File root;
-
   root = SD.open("/");
-
   driveNum = highestNumber(root);
   Serial.println(driveNum);
 
@@ -52,22 +48,7 @@ void loop(){
   }
 
   if(gps.satellites.value() > 5){
-    printDate(&dataString);
-    dataString += ",";
-    printTime(&dataString);
-    dataString += ",";
-    dataString += String(gps.satellites.value());
-    dataString += ",";
-    printPosition(&dataString);
-    dataString += ",";
-    dataString += String(gps.speed.kmph());
-    dataString += ",";
-    dataString += String(gps.course.deg());
-    dataString += ",";
-    dataString += String(gps.altitude.meters());
-    dataString += ",";
-    dataString += String(gps.hdop.hdop());
-    dataString += (";");
+    createString(&dataString);
 
     File dataFile = SD.open("datalog.txt", FILE_WRITE);
 
@@ -82,6 +63,26 @@ void loop(){
   Serial.println(gps.satellites.value());
   }
 
+}
+
+
+void createString(String* dataAddress){
+  printDate(&*dataAddress);
+  *dataAddress += ",";
+  printTime(&*dataAddress);
+  *dataAddress += ",";
+  *dataAddress += String(gps.satellites.value());
+  *dataAddress += ",";
+  printPosition(&*dataAddress);
+  *dataAddress += ",";
+  *dataAddress += String(gps.speed.kmph());
+  *dataAddress += ",";
+  *dataAddress += String(gps.course.deg());
+  *dataAddress += ",";
+  *dataAddress += String(gps.altitude.meters());
+  *dataAddress += ",";
+  *dataAddress += String(gps.hdop.hdop());
+  *dataAddress += (";");
 }
 
 

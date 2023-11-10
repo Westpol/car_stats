@@ -43,34 +43,40 @@ void loop(){
     while(millis() < continous_read_time){
       while(ss.available()){
         gps.encode(ss.read());
-        continous_read_time = millis() + 50;
+        continous_read_time = millis() + 10;
       }
     }
   }
 
-  printDate(&dataString);
-  dataString += ",";
-  printTime(&dataString);
-  dataString += ",";
-  dataString += String(gps.satellites.value());
-  dataString += ",";
-  printPosition(&dataString);
-  dataString += ",";
-  dataString += String(gps.speed.kmph());
-  dataString += ",";
-  dataString += String(gps.course.deg());
-  dataString += ",";
-  dataString += String(gps.altitude.meters());
-  dataString += ",";
-  dataString += String(gps.hdop.hdop());
-  dataString += (";");
+  if(gps.satellites.value() > 5){
+    printDate(&dataString);
+    dataString += ",";
+    printTime(&dataString);
+    dataString += ",";
+    dataString += String(gps.satellites.value());
+    dataString += ",";
+    printPosition(&dataString);
+    dataString += ",";
+    dataString += String(gps.speed.kmph());
+    dataString += ",";
+    dataString += String(gps.course.deg());
+    dataString += ",";
+    dataString += String(gps.altitude.meters());
+    dataString += ",";
+    dataString += String(gps.hdop.hdop());
+    dataString += (";");
 
-  File dataFile = SD.open("datalog.txt", FILE_WRITE);
+    File dataFile = SD.open("datalog.txt", FILE_WRITE);
 
-  if (dataFile) {
-    dataFile.println(dataString);
-    dataFile.close();
-    Serial.println(dataString);
+    if (dataFile) {
+      dataFile.println(dataString);
+      dataFile.close();
+      Serial.println(dataString);
+    }
+  }
+  else {
+  Serial.print("too few Satellites!   Number of Satellites: ");
+  Serial.println(gps.satellites.value());
   }
 
 }

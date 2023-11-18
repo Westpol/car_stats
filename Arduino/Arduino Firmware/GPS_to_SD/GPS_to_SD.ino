@@ -2,6 +2,8 @@
 #include <SPI.h>
 #include <SD.h>
 
+#define LED_BUILTIN 2
+
 //GPS
 TinyGPSPlus gps;
 static const uint32_t GPSBaud = 9600;
@@ -12,9 +14,10 @@ long driveNum;
 String filename;
 
 void setup(){
-  SPI.begin(14, 12, 13);
+  SPI.begin(14, 12, 13);  //Setup peripherals
   Serial.begin(115200);
   Serial2.begin(GPSBaud);
+  pinMode(LED_BUILTIN, OUTPUT);
 
   if (!SD.begin(chipSelect)) {
     Serial.println("Card failed, or not present");
@@ -22,30 +25,21 @@ void setup(){
     while (1);
   }
   Serial.println("card initialized.");
-  File root;
+
+  File root;              //get drive Number
   root = SD.open("/");
   driveNum = highestNumber(root, &filename);
-
-
 
 }
 
 void loop(){
 
-    String dataString = "";       //defining new, empty String to load GPS data onto
+  String dataString = "";       //defining new, empty String to load GPS data onto
 
-  unsigned long milli = millis() + 100;     //smart Delay (delay while pulling possible GPS Data)
-  unsigned long continous_read_time = 0;
-  while(millis() < milli){
-    //while(millis() < continous_read_time){
-      while(Serial2.available()){
-        gps.encode(Serial2.read());
-        //continous_read_time = millis() + 10;
-      }
-    //}
-  }
+  smartDelay(100);
 
   if(gps.satellites.value() > 5){
+    digitalWrite(LED_BUILTIN, HIGH);
     createString(&dataString);
 
     File dataFile = SD.open(filename, FILE_APPEND);
@@ -57,10 +51,22 @@ void loop(){
     }
   }
   else {
-  Serial.print("too few Satellites!   Number of Satellites: ");
-  Serial.println(gps.satellites.value());
+    digitalWrite(LED_BUILTIN, LOW);
+    Serial.print("too few Satellites!   Number of Satellites: ");
+    Serial.println(gps.satellites.value());
   }
 
+}
+
+
+void smartDelay(long milliseconds){
+  unsigned long milli = millis() + milliseconds;     //smart Delay (delay while pulling possible GPS Data)
+  unsigned long continous_read_time = 0;
+  while(millis() < milli){
+    while(Serial2.available()){
+      gps.encode(Serial2.read());
+    }
+  }
 }
 
 

@@ -1,23 +1,19 @@
 #include <TinyGPSPlus.h>
-#include <SoftwareSerial.h>
 #include <SPI.h>
 #include <SD.h>
 
 //GPS
-static const int RXPin = 2, TXPin = 3;    //GPS pins
 TinyGPSPlus gps;
-SoftwareSerial ss(RXPin, TXPin);      //SoftwareSerial GPS
 static const uint32_t GPSBaud = 9600;
 
 //SD Card
-#define chipSelect 4    //CS for SD Card
+#define chipSelect 27    //CS for SD Card
 long driveNum;
 
 void setup(){
-
+  SPI.begin(14, 12, 13);
   Serial.begin(115200);
-
-  ss.begin(GPSBaud);
+  Serial2.begin(GPSBaud);
 
     if (!SD.begin(chipSelect)) {
     Serial.println("Card failed, or not present");
@@ -40,8 +36,8 @@ void loop(){
   unsigned long continous_read_time = 0;
   while(millis() < milli){
     //while(millis() < continous_read_time){
-      while(ss.available()){
-        gps.encode(ss.read());
+      while(Serial2.available()){
+        gps.encode(Serial2.read());
         //continous_read_time = millis() + 10;
       }
     //}

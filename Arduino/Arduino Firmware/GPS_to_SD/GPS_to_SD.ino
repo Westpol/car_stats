@@ -15,7 +15,7 @@ void setup(){
   Serial.begin(115200);
   Serial2.begin(GPSBaud);
 
-    if (!SD.begin(chipSelect)) {
+  if (!SD.begin(chipSelect)) {
     Serial.println("Card failed, or not present");
     // don't do anything more:
     while (1);
@@ -32,7 +32,7 @@ void loop(){
 
     String dataString = "";       //defining new, empty String to load GPS data onto
 
-  unsigned long milli = millis() + 100;     //smart Delay (delay whie pulling possible GPS Data)
+  unsigned long milli = millis() + 100;     //smart Delay (delay while pulling possible GPS Data)
   unsigned long continous_read_time = 0;
   while(millis() < milli){
     //while(millis() < continous_read_time){
@@ -46,7 +46,7 @@ void loop(){
   if(gps.satellites.value() > 5){
     createString(&dataString);
 
-    File dataFile = SD.open("datalog.txt", FILE_WRITE);
+    File dataFile = SD.open("/datalog.txt", FILE_APPEND);
 
     if (dataFile) {
       dataFile.println(dataString);

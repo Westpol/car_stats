@@ -24,33 +24,9 @@ void setup(){
   Serial.println("card initialized.");
   File root;
   root = SD.open("/");
-  driveNum = highestNumber(root);
-  Serial.println(driveNum);
+  driveNum = highestNumber(root, &filename);
 
-  if (driveNum < 10) {
-  filename += "0000";
-  filename += String(driveNum);
-  filename += ".txt";
-  }
-  else if (driveNum < 100) {
-  filename += "000";
-  filename += String(driveNum);
-  filename += ".txt";
-  }
-  else if (driveNum < 1000) {
-  filename += "00";
-  filename += String(driveNum);
-  filename += ".txt";
-  }
-  else if (driveNum < 10000) {
-  filename += "0";
-  filename += String(driveNum);
-  filename += ".txt";
-  }
-  else if (driveNum < 100000) {
-  filename += String(driveNum);
-  filename += ".txt";
-  }
+
 
 }
 
@@ -133,7 +109,7 @@ void printPosition(String* dataAddress){
 
 }
 
-long highestNumber(File dir){
+long highestNumber(File dir, String* filenameaddress){
   long highestNum = 0;
   while (true) {
 
@@ -157,5 +133,34 @@ long highestNumber(File dir){
     }
 
   }
-  return highestNum + 1;
+
+  highestNum += 1;
+
+  *filenameaddress = "/";
+
+  if (highestNum < 10) {
+    *filenameaddress += "0000";
+    *filenameaddress += String(highestNum);
+    *filenameaddress += ".txt";
+  }
+  else if (highestNum < 100) {
+    *filenameaddress += "000";
+    *filenameaddress += String(highestNum);
+    *filenameaddress += ".txt";
+  }
+  else if (highestNum < 1000) {
+    *filenameaddress += "00";
+    *filenameaddress += String(highestNum);
+    *filenameaddress += ".txt";
+  }
+  else if (highestNum < 10000) {
+    *filenameaddress += "0";
+    *filenameaddress += String(highestNum);
+    *filenameaddress += ".txt";
+  }
+  else if (highestNum < 100000) {
+    *filenameaddress += String(highestNum);
+    *filenameaddress += ".txt";
+  }
+  return highestNum;
 }

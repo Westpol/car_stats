@@ -9,6 +9,7 @@ static const uint32_t GPSBaud = 9600;
 //SD Card
 #define chipSelect 27    //CS for SD Card
 long driveNum;
+String filename;
 
 void setup(){
   SPI.begin(14, 12, 13);
@@ -25,6 +26,31 @@ void setup(){
   root = SD.open("/");
   driveNum = highestNumber(root);
   Serial.println(driveNum);
+
+  if (driveNum < 10) {
+  filename += "0000";
+  filename += String(driveNum);
+  filename += ".txt";
+  }
+  else if (driveNum < 100) {
+  filename += "000";
+  filename += String(driveNum);
+  filename += ".txt";
+  }
+  else if (driveNum < 1000) {
+  filename += "00";
+  filename += String(driveNum);
+  filename += ".txt";
+  }
+  else if (driveNum < 10000) {
+  filename += "0";
+  filename += String(driveNum);
+  filename += ".txt";
+  }
+  else if (driveNum < 100000) {
+  filename += String(driveNum);
+  filename += ".txt";
+  }
 
 }
 
@@ -46,7 +72,7 @@ void loop(){
   if(gps.satellites.value() > 5){
     createString(&dataString);
 
-    File dataFile = SD.open("/datalog.txt", FILE_APPEND);
+    File dataFile = SD.open(filename, FILE_APPEND);
 
     if (dataFile) {
       dataFile.println(dataString);

@@ -71,13 +71,30 @@ void smartDelay(long milliseconds){
 
 
 void createString(String* dataAddress){
-  printDate(&*dataAddress);
+  
+  *dataAddress += String(gps.date.day());
+  *dataAddress += "$";
+  *dataAddress += String(gps.date.month());
+  *dataAddress += "$";
+  *dataAddress += String(gps.date.year());
+
   *dataAddress += ",";
-  printTime(&*dataAddress);
+
+  *dataAddress += String(gps.time.hour());
+  *dataAddress += "$";
+  *dataAddress += String(gps.time.minute());
+  *dataAddress += "$";
+  *dataAddress += String(gps.time.second());
+
   *dataAddress += ",";
+
   *dataAddress += String(gps.satellites.value());
   *dataAddress += ",";
-  printPosition(&*dataAddress);
+  
+  *dataAddress += String(gps.location.lat(), 10);
+  *dataAddress += "$";
+  *dataAddress += String(gps.location.lng(), 10);
+
   *dataAddress += ",";
   *dataAddress += String(gps.speed.kmph());
   *dataAddress += ",";
@@ -89,31 +106,6 @@ void createString(String* dataAddress){
   *dataAddress += (";");
 }
 
-
-void printDate(String* dataAddress){
-  *dataAddress += String(gps.date.day());
-  *dataAddress += "$";
-  *dataAddress += String(gps.date.month());
-  *dataAddress += "$";
-  *dataAddress += String(gps.date.year());
-}
-
-
-void printTime(String* dataAddress){
-  *dataAddress += String(gps.time.hour());
-  *dataAddress += "$";
-  *dataAddress += String(gps.time.minute());
-  *dataAddress += "$";
-  *dataAddress += String(gps.time.second());
-}
-
-
-void printPosition(String* dataAddress){
-  *dataAddress += String(gps.location.lat(), 10);
-  *dataAddress += "$";
-  *dataAddress += String(gps.location.lng(), 10);
-
-}
 
 long highestNumber(File dir, String* filenameaddress){
   long highestNum = 0;

@@ -38,7 +38,7 @@ void loop(){
 
   smartDelay(100);
 
-  if(gps.satellites.value() > 5){
+  if(gps.satellites.value() > 5 && gps.location.lat() != 0){
     digitalWrite(LED_BUILTIN, HIGH);
     createString(&dataString);
 

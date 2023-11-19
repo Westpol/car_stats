@@ -29,7 +29,7 @@ def haversine_distance(coord1, coord2):
     return _distance
 
 
-file = open("Raw Data/Drive0002.txt", "r")
+file = open("Raw Data/00003.txt", "r")
 
 overallDistance = 0
 firstRun = True

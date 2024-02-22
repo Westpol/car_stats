@@ -7,6 +7,7 @@
 //-------------------------------------
 #define rxPin 2
 #define txPin 3
+#define GPSAvailPin 4
 #define GPSBaud 9600
 TinyGPSPlus gps;
 
@@ -20,9 +21,13 @@ long driveNum;
 String filename;
 //-------------------------------------
 
+#define intercomSpeed 115200
+
 void setup(){
-  Serial.begin(115200);
+  Serial.begin(intercomSpeed);
   gpsSerial.begin(GPSBaud);
+
+  pinMode(GPSAvailPin, OUTPUT);
 
   SPI.begin();
 
@@ -45,7 +50,7 @@ void loop(){
   smartDelay(100);
 
   if(gps.satellites.value() > 5 && gps.location.lat() != 0){
-    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(GPSAvailPin, HIGH);
     createString(&dataString);
 
     File dataFile = SD.open(filename, O_APPEND);
@@ -57,7 +62,7 @@ void loop(){
     }
   }
   else {
-    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(GPSAvailPin, LOW);
     Serial.print("too few Satellites!   Number of Satellites: ");
     Serial.println(gps.satellites.value());
   }

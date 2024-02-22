@@ -142,30 +142,16 @@ long highestNumber(File dir, String* filenameaddress){
   highestNum += 1;
 
   *filenameaddress = "/";
+  // ifs use 24384 program storage and 1352 dynamic memory
+  String highestNumString = String(highestNum);
+  
+  int digits = highestNumString.length();
 
-  if (highestNum < 10) {
-    *filenameaddress += "0000";
-    *filenameaddress += String(highestNum);
-    *filenameaddress += ".txt";
-  }
-  else if (highestNum < 100) {
-    *filenameaddress += "000";
-    *filenameaddress += String(highestNum);
-    *filenameaddress += ".txt";
-  }
-  else if (highestNum < 1000) {
-    *filenameaddress += "00";
-    *filenameaddress += String(highestNum);
-    *filenameaddress += ".txt";
-  }
-  else if (highestNum < 10000) {
+  for(int i = 0; i < 5 - digits; i++){
     *filenameaddress += "0";
-    *filenameaddress += String(highestNum);
-    *filenameaddress += ".txt";
   }
-  else if (highestNum < 100000) {
-    *filenameaddress += String(highestNum);
-    *filenameaddress += ".txt";
-  }
+  *filenameaddress += String(highestNum);
+  *filenameaddress += ".txt";
+
   return highestNum;
 }

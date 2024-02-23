@@ -143,6 +143,7 @@ long highestNumber(File dir, String* filenameaddress){
 
   *filenameaddress = "/";
   // ifs use 24384 program storage and 1352 dynamic memory
+  // this uses 24376 program storage and 1350 dynamic memory
   String highestNumString = String(highestNum);
   
   int digits = highestNumString.length();

@@ -143,14 +143,19 @@ long highestNumber(File dir, String* filenameaddress){
 
   *filenameaddress = "/";
   // ifs use 24384 program storage and 1352 dynamic memory
-  // this uses 24376 program storage and 1350 dynamic memory
-  String highestNumString = String(highestNum);
-  
-  int digits = highestNumString.length();
+  // Stringlength uses 24376 program storage and 1350 dynamic memory
+  // division by ten uses 24360 program storage and 1350 dynamic memory
 
-  for(int i = 0; i < 5 - digits; i++){
+  float tenner = highestNum;
+  int i = 0;
+  while(tenner > 1){
+    i++;
+    tenner = tenner / 10.0;
+  }
+  for(int k = 0; k < 5 - i; k++){
     *filenameaddress += "0";
   }
+
   *filenameaddress += String(highestNum);
   *filenameaddress += ".txt";
 

@@ -16,7 +16,7 @@ SoftwareSerial gpsSerial (rxPin, txPin);
 
 //SD Card
 //-------------------------------------
-#define chipSelect 10    //CS for SD Card
+#define chipSelect 9    //CS for SD Card
 long driveNum;
 String filename;
 //-------------------------------------
@@ -41,6 +41,7 @@ void setup(){
   File root;              //get drive Number
   root = SD.open("/");
   driveNum = highestNumber(root, &filename);
+  Serial.println(driveNum);
 
 }
 
@@ -53,7 +54,7 @@ void loop(){
     digitalWrite(GPSAvailPin, HIGH);
     createString(&dataString);
 
-    File dataFile = SD.open(filename, O_APPEND);
+    File dataFile = SD.open(filename, FILE_WRITE);
 
     if (dataFile) {
       dataFile.println(dataString);
@@ -152,7 +153,7 @@ long highestNumber(File dir, String* filenameaddress){
     i++;
     tenner = tenner / 10.0;
   }
-  for(int k = 0; k < 5 - i; k++){
+  for(int k = 0; k < 4 - i; k++){
     *filenameaddress += "0";
   }
 

@@ -48,7 +48,7 @@ void setup(){
 void loop(){
   String dataString = "";       //defining new, empty String to load GPS data onto
 
-  smartDelay(100);
+  smartDelay(200);
 
   if(gps.satellites.value() > 5 && gps.location.lat() != 0){
     digitalWrite(GPSAvailPin, HIGH);
@@ -76,7 +76,20 @@ void smartDelay(long milliseconds){
     while(gpsSerial.available()){
       gps.encode(gpsSerial.read());
     }
+    espCommunication();
   }
+}
+
+void espCommunication(){
+  String gpsData = String(gps.speed.kmph());
+  gpsData += ",";
+  gpsData += String(gps.satellites.value());
+  gpsData += ",";
+  gpsData += String(gps.location.lat(), 10);
+  gpsData += "$";
+  gpsData += String(gps.location.lng(), 10);
+  gpsData += ";";
+  Serial.print(gpsData);
 }
 
 void createString(String* dataAddress){

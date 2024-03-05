@@ -8,6 +8,11 @@
 
 Adafruit_ST7789 display = Adafruit_ST7789(CS, DC, RST);
 
+struct gpsData{
+  String messg;
+};
+
+struct gpsData gpsdata;
 
 void setup(){
   Serial2.begin(115200);
@@ -18,10 +23,10 @@ void setup(){
 }
 
 void loop(){
-  display.setCursor(50, 50);
+  display.setCursor(0, 0);
   display.setTextSize(2);
   display.fillScreen(ST77XX_BLACK);
-  display.println("Hello World!");
+  display.println(gpsdata.messg);
 
   smartDelay(500);
 }
@@ -45,7 +50,7 @@ void smartDelay(unsigned long delayTime){
         }
 
         }
-        Serial.println(message);
+        gpsdata.messg = message;
       }
     }
   }

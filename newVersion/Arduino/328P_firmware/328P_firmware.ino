@@ -24,6 +24,7 @@ String filename;
 #define intercomSpeed 115200
 
 void setup(){
+  delay(3000);
   Serial.begin(intercomSpeed);
   gpsSerial.begin(GPSBaud);
 

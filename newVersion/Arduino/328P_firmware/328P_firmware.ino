@@ -33,16 +33,13 @@ void setup(){
   SPI.begin();
 
   if (!SD.begin(chipSelect)) {
-    Serial.println("Card failed, or not present");
     // don't do anything more:
     while (1);
   }
-  Serial.println("card initialized.");
 
   File root;              //get drive Number
   root = SD.open("/");
   driveNum = highestNumber(root, &filename);
-  Serial.println(driveNum);
 
 }
 
@@ -50,6 +47,7 @@ void loop(){
   String dataString = "";       //defining new, empty String to load GPS data onto
 
   smartDelay(200);
+  espCommunication();
 
   if(gps.satellites.value() > 5 && gps.location.lat() != 0){
     digitalWrite(GPSAvailPin, HIGH);
@@ -60,13 +58,10 @@ void loop(){
     if (dataFile) {
       dataFile.println(dataString);
       dataFile.close();
-      Serial.println(dataString);
     }
   }
   else {
     digitalWrite(GPSAvailPin, LOW);
-    Serial.print("too few Satellites!   Number of Satellites: ");
-    Serial.println(gps.satellites.value());
   }
 }
 
@@ -77,7 +72,6 @@ void smartDelay(long milliseconds){
     while(gpsSerial.available()){
       gps.encode(gpsSerial.read());
     }
-    espCommunication();
   }
 }
 
@@ -90,7 +84,7 @@ void espCommunication(){
   gpsData += "$";
   gpsData += String(gps.location.lng(), 10);
   gpsData += ";";
-  Serial.print(gpsData);
+  Serial.println(gpsData);
 }
 
 void createString(String* dataAddress){

@@ -18,10 +18,35 @@ void setup(){
 }
 
 void loop(){
-  if (Serial2.available() > 0) {
-    Serial.write(Serial2.read());
-  }
-  display.fillScreen(ST77XX_BLACK);
+  display.setCursor(50, 50);
   display.setTextSize(2);
+  display.fillScreen(ST77XX_BLACK);
   display.println("Hello World!");
+
+  smartDelay(500);
+}
+
+void smartDelay(unsigned long delayTime){
+  unsigned long loopTime = millis() + delayTime;
+  while (millis() < loopTime){
+    if (Serial2.available() > 0) {
+
+      char incomingChar = Serial2.read();
+      String message = "";
+
+      if (incomingChar == '?') {
+        while (incomingChar != '!') {
+
+        if (Serial2.available() > 0) {
+          incomingChar = Serial2.read();
+          if (incomingChar != '!'){
+            message += incomingChar;
+          }
+        }
+
+        }
+        Serial.println(message);
+      }
+    }
+  }
 }

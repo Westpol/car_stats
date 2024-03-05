@@ -76,14 +76,15 @@ void smartDelay(long milliseconds){
 }
 
 void espCommunication(){
-  String gpsData = String(gps.speed.kmph());
+  String gpsData = "?";
+  gpsData += String(gps.speed.kmph());
   gpsData += ",";
   gpsData += String(gps.satellites.value());
   gpsData += ",";
   gpsData += String(gps.location.lat(), 10);
   gpsData += "$";
   gpsData += String(gps.location.lng(), 10);
-  gpsData += ";";
+  gpsData += "!";
   Serial.println(gpsData);
 }
 

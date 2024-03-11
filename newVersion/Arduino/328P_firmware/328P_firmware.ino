@@ -77,6 +77,8 @@ void smartDelay(long milliseconds){
 
 void espCommunication(){
   String gpsData = "?";
+  gpsData += String(driveNum);
+  gpsData += ",";
   gpsData += String(gps.speed.kmph());
   gpsData += ",";
   gpsData += String(gps.satellites.value());

@@ -19,13 +19,14 @@ void setup(){
   Serial.begin(115200);
 
   display.init(240, 240, SPI_MODE2);
+  display.setTextColor(0xFFFF, 0x0000);
+  display.setRotation(3);
 
 }
 
 void loop(){
   display.setCursor(0, 0);
   display.setTextSize(2);
-  display.fillScreen(ST77XX_BLACK);
   display.println(gpsdata.messg);
 
   smartDelay(500);
@@ -37,12 +38,19 @@ void smartDelay(unsigned long delayTime){
     if (Serial2.available() > 0) {
 
       char incomingChar = Serial2.read();
-      String message = "";
 
       if (incomingChar == '?') {
+        String message = "";
+        int whileOverflow = 0;
+
         while (incomingChar != '!') {
+        if (whileOverflow > 50) {
+          KERNEL_PANIC();
+        }
 
         if (Serial2.available() > 0) {
+          whileOverflow ++;
+
           incomingChar = Serial2.read();
           if (incomingChar != '!'){
             message += incomingChar;
@@ -54,4 +62,8 @@ void smartDelay(unsigned long delayTime){
       }
     }
   }
+}
+
+void KERNEL_PANIC(){
+  ESP.restart();
 }

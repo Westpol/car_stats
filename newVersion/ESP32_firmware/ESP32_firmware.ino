@@ -10,6 +10,11 @@ Adafruit_ST7789 display = Adafruit_ST7789(CS, DC, RST);
 
 struct gpsData{
   String messg;
+  unsigned long driveNumber;
+  float speed;
+  int sats;
+  String lat;
+  String lon;
 };
 
 struct gpsData gpsdata;
@@ -21,6 +26,8 @@ void setup(){
   display.init(240, 240, SPI_MODE2);
   display.setTextColor(0xFFFF, 0x0000);
   display.setRotation(3);
+  
+  display.fillScreen(0x0000);
 
 }
 

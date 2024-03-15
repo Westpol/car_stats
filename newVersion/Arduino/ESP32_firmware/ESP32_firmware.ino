@@ -71,6 +71,7 @@ void smartDelay(unsigned long delayTime){
 
       if (incomingChar == '?') {
         String message = "";
+        message += '?';
         int whileOverflow = 0;
 
         while (incomingChar != '!') {
@@ -88,6 +89,7 @@ void smartDelay(unsigned long delayTime){
         }
 
         }
+        message += '!';
         gpsdata.messg = message;
         decrypt_message();
       }
@@ -96,10 +98,51 @@ void smartDelay(unsigned long delayTime){
 }
 
 void decrypt_message(){
-  for(int i = 0; i < gpsdata.messg.length(); i++){
-    Serial.print(gpsdata.messg[i]);
+  int position = 1;
+  String dataBuffer;
+  if(gpsdata.messg[0] == '?' && gpsdata.messg[gpsdata.messg.length()] == '!'){
+    Serial.println("Succex");
   }
-  Serial.println("");
+  while (gpsdata.messg[position] != ',') {    //save drive number as long
+    dataBuffer += gpsdata.messg[position];
+    position++;
+  }
+  gpsdata.driveNumber = dataBuffer.toInt();
+  dataBuffer = "";
+  position++;
+
+  while (gpsdata.messg[position] != ',') {    //save speed in kph as float
+    dataBuffer += gpsdata.messg[position];
+    position++;
+  }
+  gpsdata.speed = dataBuffer.toFloat();
+  dataBuffer = "";
+  position++;
+
+  while (gpsdata.messg[position] != ',') {    //save sats as int
+    dataBuffer += gpsdata.messg[position];
+    position++;
+  }
+  gpsdata.sats = dataBuffer.toInt();
+  dataBuffer = "";
+  position++;
+
+
+  while (gpsdata.messg[position] != '$') {    //save lat as String
+    dataBuffer += gpsdata.messg[position];
+    position++;
+  }
+  gpsdata.lat = dataBuffer;
+  dataBuffer = "";
+  position++;
+
+  while (gpsdata.messg[position] != '!') {    //save lon as String
+    dataBuffer += gpsdata.messg[position];
+    position++;
+  }
+  gpsdata.lon = dataBuffer;
+  dataBuffer = "";
+  position++;
 }
 
 void KERNEL_PANIC(){

@@ -1,3 +1,8 @@
+/*
+TODO:
+Remove Serial.println analog Input from SmartDelay
+*/
+
 #include <TinyGPSPlus.h>
 #include <SPI.h>
 #include <SD.h>
@@ -21,14 +26,24 @@ long driveNum;
 String filename;
 //-------------------------------------
 
+//Serial comm
+//-------------------------------------
 #define intercomSpeed 115200
+//-------------------------------------
+
+//power off detection
+//-------------------------------------
+#define powerOffPin A0
+//-------------------------------------
 
 void setup(){
-  delay(3000);
+  delay(1000);
   Serial.begin(intercomSpeed);
   gpsSerial.begin(GPSBaud);
 
   pinMode(GPSAvailPin, OUTPUT);
+
+  pinMode(powerOffPin, INPUT);    //analog pin that detects 5V rail dropout
 
   SPI.begin();
 
@@ -69,8 +84,17 @@ void smartDelay(long milliseconds){
   unsigned long milli = millis() + milliseconds;     //smart Delay (delay while pulling possible GPS Data)
   unsigned long continous_read_time = 0;
   while(millis() < milli){
-    while(gpsSerial.available()){
+    while(gpsSerial.available()){   // get GPS chars
       gps.encode(gpsSerial.read());
+    }
+    Serial.println(analogRead(powerOffPin));
+    if(analogRead(powerOffPin) < 512){
+      delay(50);
+      if (analogRead(powerOffPin) < 512) {
+        while(true){    //loop forever until power is off
+          Serial.println("POWEROFF");
+        }
+      }
     }
   }
 }

@@ -86,15 +86,12 @@ void smartDelay(long milliseconds){
   while(millis() < milli){
     while(gpsSerial.available()){   // get GPS chars
       gps.encode(gpsSerial.read());
-    }
-    Serial.println(analogRead(powerOffPin));
-    if(analogRead(powerOffPin) < 512){
-      delay(50);
-      if (analogRead(powerOffPin) < 512) {
-        while(true){    //loop forever until power is off
-          Serial.println("POWEROFF");
-        }
+      if(analogRead(powerOffPin) < 1000){
+        while(true){}    //loop forever until power is off
       }
+    }
+    if(analogRead(powerOffPin) < 1000){
+      while(true){}    //loop forever until power is off
     }
   }
 }

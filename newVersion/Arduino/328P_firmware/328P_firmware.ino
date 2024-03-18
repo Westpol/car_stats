@@ -12,7 +12,6 @@ Remove Serial.println analog Input from SmartDelay
 //-------------------------------------
 #define rxPin 2
 #define txPin 3
-#define GPSAvailPin 4
 #define GPSBaud 9600
 TinyGPSPlus gps;
 
@@ -41,8 +40,6 @@ void setup(){
   Serial.begin(intercomSpeed);
   gpsSerial.begin(GPSBaud);
 
-  pinMode(GPSAvailPin, OUTPUT);
-
   pinMode(powerOffPin, INPUT);    //analog pin that detects 5V rail dropout
 
   SPI.begin();
@@ -65,7 +62,6 @@ void loop(){
   espCommunication();
 
   if(gps.satellites.value() > 5 && gps.location.lat() != 0){
-    digitalWrite(GPSAvailPin, HIGH);
     createString(&dataString);
 
     File dataFile = SD.open(filename, FILE_WRITE);
@@ -74,9 +70,6 @@ void loop(){
       dataFile.println(dataString);
       dataFile.close();
     }
-  }
-  else {
-    digitalWrite(GPSAvailPin, LOW);
   }
 }
 

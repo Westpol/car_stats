@@ -10,8 +10,8 @@ Remove Serial.println analog Input from SmartDelay
 
 //GPS
 //-------------------------------------
-#define rxPin 2
-#define txPin 3
+#define rxPin 6
+#define txPin 7
 #define GPSBaud 9600
 TinyGPSPlus gps;
 
@@ -20,7 +20,7 @@ SoftwareSerial gpsSerial (rxPin, txPin);
 
 //SD Card
 //-------------------------------------
-#define chipSelect 9    //CS for SD Card
+#define chipSelect 10    //CS for SD Card
 long driveNum;
 String filename;
 //-------------------------------------
@@ -32,7 +32,7 @@ String filename;
 
 //power off detection
 //-------------------------------------
-#define powerOffPin A0
+#define ignitionKey 2
 //-------------------------------------
 
 void setup(){
@@ -40,7 +40,7 @@ void setup(){
   Serial.begin(intercomSpeed);
   gpsSerial.begin(GPSBaud);
 
-  pinMode(powerOffPin, INPUT);    //analog pin that detects 5V rail dropout
+  pinMode(ignitionKey, INPUT_PULLUP);    //analog pin that detects 5V rail dropout
 
   SPI.begin();
 
@@ -56,9 +56,10 @@ void setup(){
 }
 
 void loop(){
+
   String dataString = "";       //defining new, empty String to load GPS data onto
 
-  smartDelay(200);
+  smartDelay(500);
   espCommunication();
 
   if(gps.satellites.value() > 5 && gps.location.lat() != 0){
@@ -79,12 +80,6 @@ void smartDelay(long milliseconds){
   while(millis() < milli){
     while(gpsSerial.available()){   // get GPS chars
       gps.encode(gpsSerial.read());
-      if(analogRead(powerOffPin) < 1000){
-        while(true){}    //loop forever until power is off
-      }
-    }
-    if(analogRead(powerOffPin) < 1000){
-      while(true){}    //loop forever until power is off
     }
   }
 }

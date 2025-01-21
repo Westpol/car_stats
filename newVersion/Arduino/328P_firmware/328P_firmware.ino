@@ -40,7 +40,9 @@ void setup(){
   Serial.begin(intercomSpeed);
   gpsSerial.begin(GPSBaud);
 
-  pinMode(ignitionKey, INPUT_PULLUP);    //analog pin that detects 5V rail dropout
+  pinMode(ignitionKey, INPUT);    //analog pin that detects 5V rail dropout
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
 
   SPI.begin();
 
@@ -49,29 +51,39 @@ void setup(){
     while (1);
   }
 
-  File root;              //get drive Number
-  root = SD.open("/");
-  driveNum = highestNumber(root, &filename);
+  
 
 }
 
 void loop(){
+  digitalWrite(LED_BUILTIN, LOW);
 
-  String dataString = "";       //defining new, empty String to load GPS data onto
+  if(digitalRead(ignitionKey)){   // one time while turning ignition on
+  digitalWrite(LED_BUILTIN, HIGH);
 
-  smartDelay(500);
-  espCommunication();
-
-  if(gps.satellites.value() > 5 && gps.location.lat() != 0){
-    createString(&dataString);
-
+    File root;              //get drive Number
+    root = SD.open("/");
+    driveNum = highestNumber(root, &filename);
     File dataFile = SD.open(filename, FILE_WRITE);
 
-    if (dataFile) {
-      dataFile.println(dataString);
-      dataFile.close();
+    while(digitalRead(ignitionKey)){    // looping while ignition is on
+      String dataString = "";       //defining new, empty String to load GPS data onto
+
+      smartDelay(500);
+      espCommunication();
+
+      if(gps.satellites.value() > 5 && gps.location.lat() != 0){
+        Serial.println("True");
+        createString(&dataString);
+
+        if (dataFile) {
+          dataFile.println(dataString);
+        }
+      }
     }
+    dataFile.close();
   }
+  smartDelay(250);
 }
 
 void smartDelay(long milliseconds){
@@ -107,7 +119,7 @@ void createString(String* dataAddress){
   *dataAddress += "$";
   *dataAddress += String(gps.date.year());
 
-  *dataAddress += ",";
+  *dataAddress += ";";
 
   *dataAddress += String(gps.time.hour());
   *dataAddress += "$";
@@ -115,24 +127,24 @@ void createString(String* dataAddress){
   *dataAddress += "$";
   *dataAddress += String(gps.time.second());
 
-  *dataAddress += ",";
+  *dataAddress += ";";
 
   *dataAddress += String(gps.satellites.value());
-  *dataAddress += ",";
+  *dataAddress += ";";
   
   *dataAddress += String(gps.location.lat(), 10);
   *dataAddress += "$";
   *dataAddress += String(gps.location.lng(), 10);
 
-  *dataAddress += ",";
+  *dataAddress += ";";
   *dataAddress += String(gps.speed.kmph());
-  *dataAddress += ",";
+  *dataAddress += ";";
   *dataAddress += String(gps.course.deg());
-  *dataAddress += ",";
+  *dataAddress += ";";
   *dataAddress += String(gps.altitude.meters());
-  *dataAddress += ",";
+  *dataAddress += ";";
   *dataAddress += String(gps.hdop.hdop());
-  *dataAddress += (";");
+  *dataAddress += ("\n");
 }
 
 long highestNumber(File dir, String* filenameaddress){

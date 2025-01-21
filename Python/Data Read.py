@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-file = open("Raw Data/Drive0003.txt", "r")
+file = open("Raw Data/0003.TXT", "r")
 
 raw_data = file.readlines()
 
@@ -10,7 +10,7 @@ for i in raw_data:
 
 listlist = []
 for i in data:
-    i = i.split(",")
+    i = i.split(";")
     listlist.append(i)
 
 speeds = []

@@ -144,7 +144,6 @@ void createString(String* dataAddress){
   *dataAddress += String(gps.altitude.meters());
   *dataAddress += ";";
   *dataAddress += String(gps.hdop.hdop());
-  *dataAddress += ("\n");
 }
 
 long highestNumber(File dir, String* filenameaddress){

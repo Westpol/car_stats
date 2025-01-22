@@ -54,10 +54,11 @@ void loop(){
   digitalWrite(LED_BUILTIN, LOW);
 
   if(digitalRead(ignitionKey)){   // one time while turning ignition on
-    while(gps.satellites.value() < 5){smartDelay(100);}
+    while(gps.satellites.value() < 5){smartDelay(250);}
     File root;              //get drive Number
     root = SD.open("/");
     driveNum = highestNumber(root, &filename);
+    root.close();
     File dataFile = SD.open(filename, FILE_WRITE);
     String dataString = "";       //defining new, empty String to load GPS data onto
 

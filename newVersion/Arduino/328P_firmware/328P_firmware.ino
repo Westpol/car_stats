@@ -40,8 +40,8 @@ void setup(){
   Serial.begin(intercomSpeed);
   gpsSerial.begin(GPSBaud);
 
-  pinMode(ignitionKey, INPUT);    //analog pin that detects 5V rail dropout
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(ignitionKey, INPUT);    // digital pin that detects ignition key position
+  pinMode(LED_BUILTIN, OUTPUT);   // debug LED to show enough satellites, etc.
   digitalWrite(LED_BUILTIN, LOW);
 
   SPI.begin();
@@ -59,7 +59,6 @@ void loop(){
   digitalWrite(LED_BUILTIN, LOW);
 
   if(digitalRead(ignitionKey)){   // one time while turning ignition on
-  digitalWrite(LED_BUILTIN, HIGH);
 
     File root;              //get drive Number
     root = SD.open("/");
@@ -71,9 +70,10 @@ void loop(){
 
       smartDelay(500);
       espCommunication();
-
+      
+      digitalWrite(LED_BUILTIN, LOW);
       if(gps.satellites.value() > 5 && gps.location.lat() != 0){
-        Serial.println("True");
+        digitalWrite(LED_BUILTIN, HIGH);
         createString(&dataString);
 
         if (dataFile) {

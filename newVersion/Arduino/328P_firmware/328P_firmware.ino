@@ -1,4 +1,5 @@
 #include <TinyGPSPlus.h>
+// Search for tinygpsplus and install the version from Mikal Hart
 #include <SPI.h>
 #include <SD.h>
 #include <SoftwareSerial.h>

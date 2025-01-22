@@ -1,8 +1,3 @@
-/*
-TODO:
-Remove Serial.println analog Input from SmartDelay
-*/
-
 #include <TinyGPSPlus.h>
 #include <SPI.h>
 #include <SD.h>
@@ -37,7 +32,6 @@ String filename;
 
 void setup(){
   delay(1000);
-  Serial.begin(intercomSpeed);
   gpsSerial.begin(GPSBaud);
 
   pinMode(ignitionKey, INPUT);    // digital pin that detects ignition key position
@@ -59,20 +53,19 @@ void loop(){
   digitalWrite(LED_BUILTIN, LOW);
 
   if(digitalRead(ignitionKey)){   // one time while turning ignition on
-
+    while(gps.satellites.value() < 5){smartDelay(100);}
     File root;              //get drive Number
     root = SD.open("/");
     driveNum = highestNumber(root, &filename);
     File dataFile = SD.open(filename, FILE_WRITE);
+    String dataString = "";       //defining new, empty String to load GPS data onto
 
     while(digitalRead(ignitionKey)){    // looping while ignition is on
-      String dataString = "";       //defining new, empty String to load GPS data onto
 
       smartDelay(500);
-      espCommunication();
-      
+
       digitalWrite(LED_BUILTIN, LOW);
-      if(gps.satellites.value() > 5 && gps.location.lat() != 0){
+      if(gps.satellites.value() > 5){
         digitalWrite(LED_BUILTIN, HIGH);
         createString(&dataString);
 
@@ -94,21 +87,6 @@ void smartDelay(long milliseconds){
       gps.encode(gpsSerial.read());
     }
   }
-}
-
-void espCommunication(){
-  String gpsData = "?";
-  gpsData += String(driveNum);
-  gpsData += ",";
-  gpsData += String(gps.speed.kmph());
-  gpsData += ",";
-  gpsData += String(gps.satellites.value());
-  gpsData += ",";
-  gpsData += String(gps.location.lat(), 10);
-  gpsData += "$";
-  gpsData += String(gps.location.lng(), 10);
-  gpsData += "!";
-  Serial.println(gpsData);
 }
 
 void createString(String* dataAddress){

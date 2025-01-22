@@ -41,9 +41,8 @@ void setup(){
 
   SPI.begin();
 
-  if (!SD.begin(chipSelect)) {
-    // don't do anything more:
-    while (1);
+  while(!SD.begin(chipSelect)) {
+    delay(1000);
   }
 
   
@@ -65,6 +64,7 @@ void loop(){
     while(digitalRead(ignitionKey)){    // looping while ignition is on
 
       smartDelay(500);
+      dataString = "";
 
       digitalWrite(LED_BUILTIN, LOW);
       if(gps.satellites.value() > 5){

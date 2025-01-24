@@ -59,12 +59,11 @@ void loop(){
     driveNum = highestNumber(root, &filename);
     root.close();
     File dataFile = SD.open(filename, FILE_WRITE);
-    String dataString = "";       //defining new, empty String to load GPS data onto
 
     while(digitalRead(ignitionKey)){    // looping while ignition is on
 
       smartDelay(500);
-      dataString = "";
+      String dataString = "";   // defining new, empty String to load GPS data onto
 
       digitalWrite(LED_BUILTIN, LOW);
       if(gps.satellites.value() > 5){
@@ -86,7 +85,8 @@ void smartDelay(long milliseconds){
   unsigned long continous_read_time = 0;
   while(millis() < milli){
     while(gpsSerial.available()){   // get GPS chars
-      gps.encode(gpsSerial.read());
+      char letter = gpsSerial.read();
+      gps.encode(letter);
     }
   }
 }

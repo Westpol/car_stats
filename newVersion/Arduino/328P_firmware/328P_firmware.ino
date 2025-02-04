@@ -4,6 +4,8 @@
 #include <SD.h>
 #include <SoftwareSerial.h>
 
+// TODO: Add check if file has correct format
+
 //GPS
 //-------------------------------------
 #define rxPin 6

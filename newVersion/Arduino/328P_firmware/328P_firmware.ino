@@ -19,7 +19,7 @@ SoftwareSerial gpsSerial (rxPin, txPin);
 //SD Card
 //-------------------------------------
 #define chipSelect 10    //CS for SD Card
-long driveNum;
+long driveNum = 0;
 String filename;
 //-------------------------------------
 
@@ -56,9 +56,13 @@ void loop(){
 
   if(digitalRead(ignitionKey)){   // one time while turning ignition on
     while(gps.satellites.value() < 5){smartDelay(250);}
+    filename = "";
     File root;              //get drive Number
     root = SD.open("/");
-    driveNum = highestNumber(root, &filename);
+    while(driveNum == 0){
+      driveNum = highestNumber(root, &filename);
+      delay(500);
+    }
     root.close();
     File dataFile = SD.open(filename, FILE_WRITE);
 
@@ -129,6 +133,10 @@ void createString(String* dataAddress){
 }
 
 long highestNumber(File dir, String* filenameaddress){
+  if(!dir){
+    return 0;
+  }
+
   long highestNum = 0;
   while (true) {
 
@@ -139,6 +147,7 @@ long highestNumber(File dir, String* filenameaddress){
     }
 
     String filename = String(entry.name());
+    entry.close();
 
     char extractedNum[6];
     extractedNum[0] = filename[0];
@@ -158,21 +167,10 @@ long highestNumber(File dir, String* filenameaddress){
   highestNum += 1;
 
   *filenameaddress = "/";
-  // ifs use 24384 program storage and 1352 dynamic memory
-  // Stringlength uses 24376 program storage and 1350 dynamic memory
-  // division by ten uses 24360 program storage and 1350 dynamic memory
 
-  float tenner = highestNum;
-  int i = 0;
-  while(tenner > 1){
-    i++;
-    tenner = tenner / 10.0;
-  }
-  for(int k = 0; k < 4 - i; k++){
-    *filenameaddress += "0";
-  }
-
-  *filenameaddress += String(highestNum);
+  char numBuffer[6];
+  snprintf(numBuffer, sizeof(numBuffer), "%05ld", highestNum); // Ensures a 5-digit number
+  *filenameaddress += numBuffer;
   *filenameaddress += ".txt";
 
   return highestNum;

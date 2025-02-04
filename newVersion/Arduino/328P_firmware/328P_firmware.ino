@@ -138,13 +138,15 @@ long highestNumber(File dir, String* filenameaddress){
 
     String filename = String(entry.name());
 
-    String extractedNum = String(filename[0]);
-    extractedNum += String(filename[1]);
-    extractedNum += String(filename[2]);
-    extractedNum += String(filename[3]);
-    extractedNum += String(filename[4]);
+    char extractedNum[6];
+    extractedNum[0] = filename[0];
+    extractedNum[1] = filename[1];
+    extractedNum[2] = filename[2];
+    extractedNum[3] = filename[3];
+    extractedNum[4] = filename[4];
+    extractedNum[5] = '\0';
 
-    int number = extractedNum.toInt();
+    int number = atoi(extractedNum);
     if(number > highestNum){
       highestNum = number;
     }

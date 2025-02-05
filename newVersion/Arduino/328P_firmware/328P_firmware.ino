@@ -57,14 +57,10 @@ void loop(){
   if(digitalRead(ignitionKey)){   // one time while turning ignition on
     while(gps.satellites.value() < 5){smartDelay(250);}
     filename = "";
-    File root;              //get drive Number
-    root = SD.open("/");
     while(driveNum == 0){
-      driveNum = highestNumber(root, &filename);
+      driveNum = highestNumber(&filename);
       delay(500);
     }
-    root.close();
-    File dataFile = SD.open(filename, FILE_WRITE);
 
     while(digitalRead(ignitionKey)){    // looping while ignition is on
 
@@ -76,12 +72,18 @@ void loop(){
         digitalWrite(LED_BUILTIN, HIGH);
         createString(&dataString);
 
+        File dataFile = SD.open(filename, FILE_WRITE);
+        while(!dataFile){
+          dataFile = SD.open(filename, FILE_WRITE);
+          delay(1000);
+        }
+
         if (dataFile) {
           dataFile.println(dataString);
         }
+        dataFile.close();
       }
     }
-    dataFile.close();
   }
   smartDelay(250);
 }
@@ -132,7 +134,11 @@ void createString(String* dataAddress){
   *dataAddress += String(gps.hdop.hdop());
 }
 
-long highestNumber(File dir, String* filenameaddress){
+long highestNumber(String* filenameaddress){
+  
+  File dir;              //get drive Number
+  dir = SD.open("/");
+
   if(!dir){
     return 0;
   }
@@ -165,6 +171,7 @@ long highestNumber(File dir, String* filenameaddress){
 
     }
   }
+  dir.close();
 
   highestNum += 1;
 

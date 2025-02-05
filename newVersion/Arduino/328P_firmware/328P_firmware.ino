@@ -148,28 +148,29 @@ long highestNumber(File dir, String* filenameaddress){
 
     String filename = String(entry.name());
     entry.close();
+    if(filename.length() == 9){
 
-    char extractedNum[6];
-    extractedNum[0] = filename[0];
-    extractedNum[1] = filename[1];
-    extractedNum[2] = filename[2];
-    extractedNum[3] = filename[3];
-    extractedNum[4] = filename[4];
-    extractedNum[5] = '\0';
+      char extractedNum[6];
+      extractedNum[0] = filename[0];
+      extractedNum[1] = filename[1];
+      extractedNum[2] = filename[2];
+      extractedNum[3] = filename[3];
+      extractedNum[4] = filename[4];
+      extractedNum[5] = '\0';
 
-    int number = atoi(extractedNum);
-    if(number > highestNum){
-      highestNum = number;
+      int number = atoi(extractedNum);
+      if(number > highestNum){
+        highestNum = number;
+      }
+
     }
-
   }
 
   highestNum += 1;
 
-  *filenameaddress = "/";
-
   char numBuffer[6];
   snprintf(numBuffer, sizeof(numBuffer), "%05ld", highestNum); // Ensures a 5-digit number
+  *filenameaddress = "/";
   *filenameaddress += numBuffer;
   *filenameaddress += ".txt";
 

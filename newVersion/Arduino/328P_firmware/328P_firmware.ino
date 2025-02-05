@@ -1,82 +1,79 @@
-#include <TinyGPSPlus.h>
-// Search for tinygpsplus and install the version from Mikal Hart
+#include <TinyGPSPlus.h>  // GPS Library
 #include <SPI.h>
-#include <SD.h>
+#include <SdFat.h>        // SdFat Library for SD Card
 #include <SoftwareSerial.h>
 
-// TODO: Add check if file has correct format
-
-//GPS
+// GPS
 //-------------------------------------
 #define rxPin 6
 #define txPin 7
 #define GPSBaud 9600
 TinyGPSPlus gps;
-
-SoftwareSerial gpsSerial (rxPin, txPin);
+SoftwareSerial gpsSerial(rxPin, txPin);
 //-------------------------------------
 
-//SD Card
+// SD Card
 //-------------------------------------
-#define chipSelect 10    //CS for SD Card
+#define chipSelect 10  // CS for SD Card
+SdFat SD;              // Use SdFat for better performance
+SdFile dataFile;
 long driveNum = 0;
-String filename;
+char filename[13];  // File name buffer ("/00000.txt")
 //-------------------------------------
 
-//Serial comm
-//-------------------------------------
-#define intercomSpeed 115200
-//-------------------------------------
-
-//power off detection
+// Power Off Detection
 //-------------------------------------
 #define ignitionKey 2
 //-------------------------------------
 
-void setup(){
+void setup() {
   delay(1000);
   gpsSerial.begin(GPSBaud);
 
-  pinMode(ignitionKey, INPUT);    // digital pin that detects ignition key position
-  pinMode(LED_BUILTIN, OUTPUT);   // debug LED to show enough satellites, etc.
+  pinMode(ignitionKey, INPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
   SPI.begin();
 
-  while(!SD.begin(chipSelect)) {
-    delay(1000);
+  // Initialize SdFat in SPI_HALF_SPEED mode for Arduino Uno compatibility
+  if (!SD.begin(chipSelect, SD_SCK_MHZ(4))) {  // Lower speed for stability
+    while (1) { digitalWrite(LED_BUILTIN, HIGH); delay(500); digitalWrite(LED_BUILTIN, LOW); delay(500); }
   }
-
-  
-
 }
 
-void loop(){
+void loop() {
   digitalWrite(LED_BUILTIN, LOW);
 
-  if(digitalRead(ignitionKey)){   // one time while turning ignition on
-    while(gps.satellites.value() < 5){smartDelay(250);}
-    filename = "";
-    File root;              //get drive Number
-    root = SD.open("/");
-    while(driveNum == 0){
-      driveNum = highestNumber(root, &filename);
+  if (digitalRead(ignitionKey)) {  // One-time execution when ignition is turned on
+    while (gps.satellites.value() < 5) {
+      smartDelay(250);
+    }
+
+    SdFile root;
+    if (!root.open("/")) {
+      return;
+    }
+
+    while (driveNum == 0) {
+      driveNum = highestNumber(root, filename);  // Pass `root` by reference
       delay(500);
     }
     root.close();
-    File dataFile = SD.open(filename, FILE_WRITE);
 
-    while(digitalRead(ignitionKey)){    // looping while ignition is on
+    if (!dataFile.open(filename, O_WRITE | O_CREAT)) {
+      return;
+    }
 
+    while (digitalRead(ignitionKey)) {  // Loop while ignition is on
       smartDelay(500);
-      String dataString = "";   // defining new, empty String to load GPS data onto
+      char dataString[64];  // Buffer for GPS data string
+      createString(dataString, sizeof(dataString));
 
       digitalWrite(LED_BUILTIN, LOW);
-      if(gps.satellites.value() > 5){
+      if (gps.satellites.value() > 5) {
         digitalWrite(LED_BUILTIN, HIGH);
-        createString(&dataString);
-
-        if (dataFile) {
+        if (dataFile.isOpen()) {
           dataFile.println(dataString);
         }
       }
@@ -86,93 +83,51 @@ void loop(){
   smartDelay(250);
 }
 
-void smartDelay(long milliseconds){
-  unsigned long milli = millis() + milliseconds;     //smart Delay (delay while pulling possible GPS Data)
-  unsigned long continous_read_time = 0;
-  while(millis() < milli){
-    while(gpsSerial.available()){   // get GPS chars
+void smartDelay(long milliseconds) {
+  unsigned long milli = millis() + milliseconds;
+  while (millis() < milli) {
+    while (gpsSerial.available()) {  // Get GPS chars
       char letter = gpsSerial.read();
       gps.encode(letter);
     }
   }
 }
 
-void createString(String* dataAddress){
-  
-  *dataAddress += String(gps.date.day());
-  *dataAddress += "$";
-  *dataAddress += String(gps.date.month());
-  *dataAddress += "$";
-  *dataAddress += String(gps.date.year());
-
-  *dataAddress += ";";
-
-  *dataAddress += String(gps.time.hour());
-  *dataAddress += "$";
-  *dataAddress += String(gps.time.minute());
-  *dataAddress += "$";
-  *dataAddress += String(gps.time.second());
-
-  *dataAddress += ";";
-
-  *dataAddress += String(gps.satellites.value());
-  *dataAddress += ";";
-  
-  *dataAddress += String(gps.location.lat(), 10);
-  *dataAddress += "$";
-  *dataAddress += String(gps.location.lng(), 10);
-
-  *dataAddress += ";";
-  *dataAddress += String(gps.speed.kmph());
-  *dataAddress += ";";
-  *dataAddress += String(gps.course.deg());
-  *dataAddress += ";";
-  *dataAddress += String(gps.altitude.meters());
-  *dataAddress += ";";
-  *dataAddress += String(gps.hdop.hdop());
+void createString(char* dataBuffer, size_t bufferSize) {
+  snprintf(dataBuffer, bufferSize, "%02d$%02d$%04d;%02d$%02d$%02d;%d;%.6f$%.6f;%.2f;%.2f;%.1f;%.1f",
+           gps.date.day(), gps.date.month(), gps.date.year(),
+           gps.time.hour(), gps.time.minute(), gps.time.second(),
+           gps.satellites.value(),
+           gps.location.lat(), gps.location.lng(),
+           gps.speed.kmph(), gps.course.deg(), gps.altitude.meters(), gps.hdop.hdop());
 }
 
-long highestNumber(File dir, String* filenameaddress){
-  if(!dir){
+long highestNumber(SdFile& dir, char* filenameBuffer) {
+  if (!dir.isOpen()) {
     return 0;
   }
 
   long highestNum = 0;
-  while (true) {
+  SdFile entry;
 
-    File entry =  dir.openNextFile();
-    if (! entry) {
-      // no more files
-      break;
-    }
-
-    String filename = String(entry.name());
+  while (entry.openNext(&dir, O_READ)) {
+    char entryName[13];  // Buffer for filename
+    entry.getName(entryName, sizeof(entryName));
     entry.close();
-    if(filename.length() == 9){
 
-      char extractedNum[6];
-      extractedNum[0] = filename[0];
-      extractedNum[1] = filename[1];
-      extractedNum[2] = filename[2];
-      extractedNum[3] = filename[3];
-      extractedNum[4] = filename[4];
-      extractedNum[5] = '\0';
+    if (strlen(entryName) == 9 && strcmp(entryName + 5, ".txt") == 0) {
+      char extractedNum[6] = {0};  // Extract numeric part
+      strncpy(extractedNum, entryName, 5);
 
       int number = atoi(extractedNum);
-      if(number > highestNum){
+      if (number > highestNum) {
         highestNum = number;
       }
-
     }
   }
 
   highestNum += 1;
-
-  char numBuffer[6];
-  snprintf(numBuffer, sizeof(numBuffer), "%05ld", highestNum); // Ensures a 5-digit number
-  *filenameaddress = "/";
-  *filenameaddress += numBuffer;
-  *filenameaddress += ".txt";
+  snprintf(filenameBuffer, 13, "/%05ld.txt", highestNum);  // Generate filename
 
   return highestNum;
 }

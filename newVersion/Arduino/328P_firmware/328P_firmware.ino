@@ -87,8 +87,7 @@ void smartDelay(long milliseconds) {
   unsigned long milli = millis() + milliseconds;
   while (millis() < milli) {
     while (gpsSerial.available()) {  // Get GPS chars
-      char letter = gpsSerial.read();
-      gps.encode(letter);
+      gps.encode(gpsSerial.read());
     }
   }
 }

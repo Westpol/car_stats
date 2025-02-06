@@ -37,14 +37,14 @@ def main():
 
     text_area_rect = pygame.Rect(0, 0, 1000, 50)  # Rechteck für den Textbereich
 
-    with open("Raw Data/0003.TXT", "r") as file:
+    with open("Raw Data/00001.TXT", "r") as file:
         for line in file:
             hour, minute, second, lat, lon, speed = parse_line(line)
             if lat is None or lon is None:
                 continue
 
-            lat_rest = lat * 5000 * 5
-            lon_rest = lon * 5000 * 5
+            lat_rest = lat * 200 * 5
+            lon_rest = lon * 200 * 5
 
             if not centered:
                 lat_center = lat_rest
@@ -79,7 +79,7 @@ def main():
             screen.blit(text_surface, (10, 10))  # Text zeichnen
             pygame.display.flip()
 
-            time.sleep(0.1)
+            time.sleep(0.006)
 
     while True:
         for event in pygame.event.get():

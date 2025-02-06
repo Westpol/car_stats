@@ -68,7 +68,7 @@ void loop(){
       String dataString = "";   // defining new, empty String to load GPS data onto
 
       digitalWrite(LED_BUILTIN, LOW);
-      if(gps.satellites.value() > 5){
+      if(gps.satellites.value() > 5 && gps.hdop.hdop() < 10 && (gps.location.lat() != 0 && gps.location.lng() != 0)){
         digitalWrite(LED_BUILTIN, HIGH);
         createString(&dataString);
 

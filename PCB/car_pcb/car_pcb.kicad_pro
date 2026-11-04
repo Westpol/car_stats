@@ -428,15 +428,24 @@
         "filename": "car_pcb.kicad_sch",
         "name": "car_pcb",
         "uuid": "2686d70e-c309-4bd1-8d5e-27150f6f0704"
+      },
+      {
+        "filename": "power.kicad_sch",
+        "name": "Power",
+        "uuid": "bcbaf48b-9c26-4c75-a35c-9cc632d20b48"
       }
     ],
-    "used_designators": "Q1,U1-2",
+    "used_designators": "#PWR1-2,Q1-3,R1-3,U1-2",
     "variants": []
   },
   "sheets": [
     [
       "2686d70e-c309-4bd1-8d5e-27150f6f0704",
       "car_pcb"
+    ],
+    [
+      "bcbaf48b-9c26-4c75-a35c-9cc632d20b48",
+      "Power"
     ]
   ],
   "text_variables": {},

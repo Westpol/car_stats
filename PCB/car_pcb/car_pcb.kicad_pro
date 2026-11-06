@@ -430,13 +430,17 @@
         "uuid": "2686d70e-c309-4bd1-8d5e-27150f6f0704"
       }
     ],
-    "used_designators": "Q1,U1-2",
+    "used_designators": "#PWR1-2,Q1-3,R1-3,U1-2",
     "variants": []
   },
   "sheets": [
     [
       "2686d70e-c309-4bd1-8d5e-27150f6f0704",
       "car_pcb"
+    ],
+    [
+      "22d1e160-b2e7-4aff-b5ff-68f75309b06b",
+      "Power"
     ]
   ],
   "text_variables": {},
